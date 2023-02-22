@@ -1,0 +1,193 @@
+[package]
+name = "awesome-git"
+maintainers = ["alyrow"]
+description = "Highly configurable framework window manager"
+url = "https://awesomewm.org/"
+source = "https://github.com/awesomeWM/awesome.git"
+arch = ["i686", "x86_64"]
+license = ["GPL2"]
+provides = ["notification-daemon", "awesome"]
+preinst = '''
+#!/bin/sh
+set -e
+
+mkdir -p /usr/share/awesome/themes/default/taglist
+mkdir -p /usr/share/awesome/themes/default/layouts
+mkdir -p /usr/share/awesome/themes/default/titlebar
+mkdir -p /usr/share/awesome/themes/sky/layouts
+mkdir -p /usr/share/awesome/themes/xresources
+mkdir -p /usr/share/awesome/themes/gtk
+mkdir -p /usr/share/awesome/themes/zenburn/taglist
+mkdir -p /usr/share/awesome/themes/zenburn/layouts
+mkdir -p /usr/share/awesome/themes/zenburn/titlebar
+mkdir -p /usr/share/awesome/lib/awful/screen
+mkdir -p /usr/share/awesome/lib/awful/client
+mkdir -p /usr/share/awesome/lib/awful/permissions
+mkdir -p /usr/share/awesome/lib/awful/hotkeys_popup/keys
+mkdir -p /usr/share/awesome/lib/awful/layout/suit
+mkdir -p /usr/share/awesome/lib/awful/mouse
+mkdir -p /usr/share/awesome/lib/awful/widget
+mkdir -p /usr/share/awesome/lib/menubar
+mkdir -p /usr/share/awesome/lib/beautiful
+mkdir -p /usr/share/awesome/lib/ruled
+mkdir -p /usr/share/awesome/lib/naughty/list
+mkdir -p /usr/share/awesome/lib/naughty/layout
+mkdir -p /usr/share/awesome/lib/naughty/container
+mkdir -p /usr/share/awesome/lib/naughty/widget
+mkdir -p /usr/share/awesome/lib/wibox/layout
+mkdir -p /usr/share/awesome/lib/wibox/container
+mkdir -p /usr/share/awesome/lib/wibox/widget
+mkdir -p /usr/share/awesome/lib/gears/sort
+mkdir -p /usr/share/awesome/lib/gears/object
+mkdir -p /usr/share/awesome/icons
+mkdir -p /usr/share/doc/awesome/doc/classes
+mkdir -p /usr/share/doc/awesome/doc/widgets
+mkdir -p /usr/share/doc/awesome/doc/input_handling
+mkdir -p /usr/share/doc/awesome/doc/popups_and_bars
+mkdir -p /usr/share/doc/awesome/doc/declarative_rules
+mkdir -p /usr/share/doc/awesome/doc/widget_containers
+mkdir -p "/usr/share/doc/awesome/doc/sample files"
+mkdir -p /usr/share/doc/awesome/doc/theme_related_libraries
+mkdir -p /usr/share/doc/awesome/doc/documentation
+mkdir -p /usr/share/doc/awesome/doc/core_components
+mkdir -p /usr/share/doc/awesome/doc/utility_libraries
+mkdir -p /usr/share/doc/awesome/doc/widget_layouts
+mkdir -p /usr/share/doc/awesome/doc/images
+mkdir -p /usr/share/doc/awesome/doc/libraries
+mkdir -p /usr/share/xsessions
+mkdir -p /usr/share/man/es/man1
+mkdir -p /usr/share/man/es/man5
+mkdir -p /usr/share/man/man1
+mkdir -p /usr/share/man/fr/man1
+mkdir -p /usr/share/man/fr/man5
+mkdir -p /usr/share/man/it/man1
+mkdir -p /usr/share/man/it/man5
+mkdir -p /usr/share/man/ru/man1
+mkdir -p /usr/share/man/ru/man5
+mkdir -p /usr/share/man/man5
+mkdir -p /usr/share/man/de/man1
+mkdir -p /usr/share/man/de/man5
+mkdir -p /etc/xdg/awesome
+'''
+postinst = '''
+#!/bin/sh
+set -e
+# Automatically added by dh_installmenu/13.5.2ubuntu1
+inst=/etc/menu-methods/awesome
+if [ -f $inst ]; then
+	chmod a+x $inst
+	if [ -x "`command -v update-menus`" ]; then
+		update-menus
+	fi
+fi
+# End automatically added section
+# Automatically added by dh_installwm/13.5.2ubuntu1
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ]; then
+	update-alternatives --install /usr/bin/x-window-manager \
+		x-window-manager /usr/bin/awesome 20 \
+		--slave /usr/share/man/man1/x-window-manager.1.gz \
+		x-window-manager.1.gz /usr/share/man/man1/awesome.1.gz
+fi
+# End automatically added section
+'''
+prerm = '''
+#!/bin/sh
+set -e
+# Automatically added by dh_installwm/13.5.2ubuntu1
+if [ "$1" = "remove" ]; then
+	update-alternatives --remove x-window-manager /usr/bin/awesome
+fi
+# End automatically added section
+'''
+postrm = '''
+#!/bin/sh
+
+set -e
+
+# Automatically added by dh_installmenu/13.5.2ubuntu1
+inst=/etc/menu-methods/awesome
+if [ "$1" = "remove" ] && [ -f "$inst" ]; then chmod a-x $inst ; fi
+if [ -x "`command -v update-menus`" ]; then update-menus ; fi
+# End automatically added section
+'''
+
+[dependencies.runtime]
+libcairo2 = { is = "APT" }
+dbus = { is = "APT" }
+"libgdk-pixbuf2.0-0" = { is = "APT" }
+libxdg-basedir1 = { is = "APT" }
+libxkbcommon-x11-0 = { is = "APT" }
+"liblua5.3-0" = { is = "APT" }
+"lua5.3" = { is = "APT" }
+lua-lgi = { is = "APT" }
+"libpango-1.0-0" = { is = "APT" }
+libstartup-notification0 = { is = "APT" }
+libxcb-cursor0 = { is = "APT" }
+libxcb-keysyms1 = { is = "APT" }
+libxcb-xrm0 = { is = "APT" }
+libxfixes3 = { is = "APT" }
+
+[dependencies.build]
+asciidoctor = { is = "APT" }
+cmake = { is = "APT" }
+docbook-xsl = { is = "APT" }
+git = { is = "APT" }
+imagemagick = { is = "APT" }
+lua-ldoc = { is = "APT" }
+"liblua5.3-dev" = { is = "APT" }
+"lua5.3" = { is = "APT" }
+lua-lgi-dev = { is = "APT" }
+"gir1.2-freedesktop" = { is = "APT" }
+"gir1.2-pango-1.0" = { is = "APT" }
+libx11-xcb-dev = { is = "APT" }
+"libglib2.0-dev" = { is = "APT" }
+"libgdk-pixbuf2.0-dev" = { is = "APT" }
+libcairo2-dev = { is = "APT" }
+libxcb-cursor-dev = { is = "APT" }
+libxcb-randr0-dev = { is = "APT" }
+libxcb-xtest0-dev = { is = "APT" }
+libxcb-xinerama0-dev = { is = "APT" }
+libxcb-shape0-dev = { is = "APT" }
+libxcb-util-dev = { is = "APT" }
+libxcb-keysyms1-dev = { is = "APT" }
+libxcb-icccm4-dev = { is = "APT" }
+libxcb-xfixes0-dev = { is = "APT" }
+libxcb-xkb-dev = { is = "APT" }
+libxkbcommon-x11-dev = { is = "APT" }
+libxkbcommon-dev = { is = "APT" }
+libstartup-notification0-dev = { is = "APT" }
+libxdg-basedir-dev = { is = "APT" }
+libxcb-xrm-dev = { is = "APT" }
+libdbus-1-dev = { is = "APT" }
+
+[dependencies.optional]
+rlwrap = { is = "APT" }
+dex = { is = "APT" }
+librsvg2-2 = { is = "APT" }
+
+[script]
+prepare = '''
+
+'''
+build = '''
+mkdir -p build
+cd build
+cmake ../ \
+  -DCMAKE_BUILD_TYPE=RELEASE \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  -DSYSCONFDIR=/etc \
+  -DLUA_INCLUDE_DIR=/usr/include/lua5.3 \
+  -DLUA_LIBRARY=/usr/lib/x86_64-linux-gnu/liblua5.3.so \
+  -DLUA_EXECUTABLE=/usr/bin/lua5.3
+'''
+check = '''
+
+'''
+package = '''
+cd build
+
+make DESTDIR="$pkgdir" install
+
+install -Dm644 "$srcdir"/$pkgname/awesome.desktop \
+  "$pkgdir/usr/share/xsessions/awesome.desktop"
+'''
