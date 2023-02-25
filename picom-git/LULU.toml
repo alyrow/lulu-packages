@@ -1,0 +1,85 @@
+[package]
+name = "picom-git"
+maintainers = ["alyrow"]
+description = "lightweight compositor for X11"
+url = "https://github.com/yshui/picom"
+source = "https://github.com/yshui/picom.git"
+arch = ["i686", "x86_64"]
+license = ["MIT", "MPL2"]
+provides = ["picom"]
+preinst = '''
+#!/bin/sh
+set -e
+
+mkdir -p /usr/share/licenses/
+'''
+
+[dependencies.runtime]
+python3 = { is = "APT" }
+libc6 = { is = "APT" }
+libconfig9 = { is = "APT" }
+libdbus-1-3 = { is = "APT" }
+libev4 = { is = "APT" }
+libgl1 = { is = "APT" }
+libpcre3 = { is = "APT" }
+libpixman-1-0 = { is = "APT" }
+libx11-6 = { is = "APT" }
+libx11-xcb1 = { is = "APT" }
+libxcb-composite0 = { is = "APT" }
+libxcb-damage0 = { is = "APT" }
+libxcb-glx0 = { is = "APT" }
+libxcb-image0 = { is = "APT" }
+libxcb-present0 = { is = "APT" }
+libxcb-randr0 = { is = "APT" }
+libxcb-render-util0 = { is = "APT" }
+libxcb-render0 = { is = "APT" }
+libxcb-shape0 = { is = "APT" }
+libxcb-sync1 = { is = "APT" }
+libxcb-xfixes0 = { is = "APT" }
+libxcb-xinerama0 = { is = "APT" }
+libxcb1 = { is = "APT" }
+
+[dependencies.build]
+asciidoc = { is = "APT" }
+libxext-dev = { is = "APT" }
+libxcb1-dev = { is = "APT" }
+git = { is = "APT" }
+libxcb-damage0-dev = { is = "APT" }
+libxcb-dpms0-dev = { is = "APT" }
+libxcb-render-util0-dev = { is = "APT" }
+libxcb-composite0-dev = { is = "APT" }
+libxcb-image0-dev = { is = "APT" }
+libxcb-present-dev = { is = "APT" }
+libxcb-glx0-dev = { is = "APT" }
+libx11-xcb-dev = { is = "APT" }
+libpixman-1-dev = { is = "APT" }
+libconfig-dev = { is = "APT" }
+libev-dev = { is = "APT" }
+libegl-dev = { is = "APT" }
+libxcb-randr0-dev = { is = "APT" }
+libxcb-shape0-dev = { is = "APT" }
+libpcre2-dev = { is = "APT" }
+libxcb-xfixes0-dev = { is = "APT" }
+uthash-dev = { is = "APT" }
+libgl-dev = { is = "APT" }
+libevdev-dev = { is = "APT" }
+meson = { is = "APT" }
+cmake = { is = "APT" }
+libdbus-1-dev = { is = "APT" }
+
+[dependencies.optional]
+
+[script]
+build = '''
+meson --buildtype=release . build --prefix=/usr -Dwith_docs=true
+ninja -C build
+'''
+package = '''
+DESTDIR="${pkgdir}" ninja -C build install
+
+# install license
+install -D -m644 "LICENSES/MIT" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE-MIT"
+
+# example conf
+install -D -m644 "picom.sample.conf" "${pkgdir}/etc/xdg/picom.conf.example"
+'''
