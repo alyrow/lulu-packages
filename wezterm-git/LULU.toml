@@ -1,0 +1,99 @@
+[package]
+name = "wezterm-git"
+maintainers = ["alyrow"]
+description = "A terminal emulator implemented in Rust, using OpenGL ES 2 for rendering."
+url = "https://github.com/wez/wezterm"
+source = "https://github.com/wez/wezterm.git"
+arch = ["x86_64"]
+license = ["MIT"]
+provides = ["wezterm", "wezterm-gui", "wezterm-mux-server"]
+preinst = '''
+#!/bin/sh
+set -e
+
+mkdir -p /usr/share/terminfo/w/
+mkdir -p /usr/share/licenses/wezterm-git/
+'''
+postinst = '''
+#!/bin/sh
+set -e
+if [ -x "`command -v update-icon-caches`" ]; then
+	update-icon-caches /usr/share/icons/hicolor/
+fi
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ]; then
+	update-alternatives --install /usr/bin/x-terminal-emulator \
+        x-terminal-emulator /usr/bin/wezterm 40
+fi
+'''
+prerm = '''
+#!/bin/sh
+set -e
+if [ "$1" = "remove" ]; then
+	update-alternatives --remove x-terminal-emulator /usr/bin/wezterm
+fi
+'''
+
+[dependencies.runtime]
+libc6 = { is = "APT" }
+libfontconfig1 = { is = "APT" }
+libgcc-s1 = { is = "APT" }
+"libssl1.1" = { is = "APT" }
+libwayland-client0 = { is = "APT" }
+libwayland-egl1 = { is = "APT" }
+libx11-6 = { is = "APT" }
+libx11-xcb1 = { is = "APT" }
+libxcb-image0 = { is = "APT" }
+libxcb-util1 = { is = "APT" }
+libxcb1 = { is = "APT" }
+libxkbcommon-x11-0 = { is = "APT" }
+libxkbcommon0 = { is = "APT" }
+zlib1g = { is = "APT" }
+
+[dependencies.build]
+cmake = { is = "APT" }
+git = { is = "APT" }
+pkgconf = { is = "APT" }
+python3 = { is = "APT" }
+
+[dependencies.optional]
+
+[script]
+prepare = '''
+export PATH=$PATH:$HOME/.cargo/bin/
+cd "$srcdir"
+git submodule init
+ git config -f .gitmodules "submodule.harfbuzz/harfbuzz.url" "$srcdir/harfbuzz"
+ git config -f .gitmodules "submodule.freetype/libpng.url" "$srcdir/libpng"
+ git config -f .gitmodules "submodule.deps/freetype/zlib.url" "$srcdir/zlib"
+ git config -f .gitmodules "submodule.freetype2.url" "$srcdir/freetype2"
+ git submodule update
+ cargo fetch --locked --target "x86_64-unknown-linux-gnu"
+'''
+build = '''
+export PATH=$PATH:$HOME/.cargo/bin/
+cargo build --frozen --release
+tic -x -o "$srcdir/terminfo" "$srcdir/termwiz/data/wezterm.terminfo"
+'''
+check = '''
+
+'''
+package = '''
+install -Dsm755 target/release/wezterm "$pkgdir/usr/bin/wezterm"
+install -Dsm755 target/release/wezterm-gui "$pkgdir/usr/bin/wezterm-gui"
+install -Dsm755 target/release/wezterm-mux-server "$pkgdir/usr/bin/wezterm-mux-server"
+install -Dsm755 target/release/strip-ansi-escapes "$pkgdir/usr/bin/strip-ansi-escapes"
+
+install -Dm644 assets/icon/terminal.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/org.wezfurlong.wezterm.png"
+install -Dm644 assets/icon/wezterm-icon.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.wezfurlong.wezterm.svg"
+install -Dm644 assets/wezterm.desktop "$pkgdir/usr/share/applications/org.wezfurlong.wezterm.desktop"
+install -Dm644 assets/wezterm.appdata.xml "$pkgdir/usr/share/metainfo/org.wezfurlong.wezterm.appdata.xml"
+install -Dm644 assets/wezterm-nautilus.py "$pkgdir/usr/share/nautilus-python/extensions/wezterm-nautilus.py"
+install -Dm644 terminfo/w/wezterm "$pkgdir/usr/share/terminfo/w/wezterm"
+
+install -Dm644 assets/shell-integration/wezterm.sh "$pkgdir/etc/profile.d/wezterm.sh"
+install -Dm644 assets/shell-completion/bash "$pkgdir/usr/share/bash-completion/completions/wezterm"
+install -Dm644 assets/shell-completion/zsh "$pkgdir/usr/share/zsh/site-functions/_wezterm"
+install -Dm644 assets/shell-completion/fish "$pkgdir/usr/share/fish/completions/wezterm.fish"
+
+install -Dm644 LICENSE.md -t "${pkgdir}/usr/share/licenses/wezterm-git"
+'''
